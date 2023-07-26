@@ -16,7 +16,7 @@ class Item(models.Model):
     short_description = models.TextField()
     long_description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    product_image = models.ImageField(upload_to="product_images/", null = True, blank = True)
+    product_image = models.ImageField(upload_to="item_api/product_images/", null = True, blank = True)
     slug = models.SlugField(unique=True, null = True, max_length=200, blank=True)
     is_avialable = models.BooleanField(default=True)
     is_favorite = models.BooleanField(default=False)

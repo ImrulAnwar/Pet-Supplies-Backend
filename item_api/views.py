@@ -55,6 +55,6 @@ class SingleItemView(APIView):
         try:
             item = Item.objects.get(slug = slug)
             item.delete()
-            return Response("Note Deleted", status = status.HTTP_204_NO_CONTENT)
+            return Response("Item Deleted", status = status.HTTP_204_NO_CONTENT)
         except Item.DoesNotExist:
             return Response(status.HTTP_404_NOT_FOUND)
