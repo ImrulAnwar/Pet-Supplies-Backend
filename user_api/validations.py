@@ -1,6 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
+from django.conf import settings
+from django.core.mail import send_mail
 UserModel = get_user_model()
+
 
 def custom_validation(data):
     email = data['email'].strip()
@@ -24,14 +27,23 @@ def validate_email(data):
         raise ValidationError('an email is needed')
     return True
 
+
 def validate_username(data):
     username = data['username'].strip()
     if not username:
         raise ValidationError('choose another username')
     return True
 
+
 def validate_password(data):
     password = data['password'].strip()
     if not password:
         raise ValidationError('a password is needed')
     return True
+
+
+def send_account_activation_email(email, email_token):
+    subject = 'Verify your account!'
+    email_from = settings.EMAIL_HOST_USER
+    message = f'Click on the link to verify your account\n {settings.BASE_URL}/user/activate/{email_token}'
+    send_mail(subject, message, email_from, [email])
