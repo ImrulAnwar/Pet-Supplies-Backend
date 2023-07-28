@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'item_api',
     'user_api',
+    'verification_api'
 ]
 
 MIDDLEWARE = [
