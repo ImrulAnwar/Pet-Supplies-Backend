@@ -6,6 +6,7 @@ urlpatterns = [
     path('superregister', views.SuperUserRegister.as_view(), name='super_register'),
     path('login', views.UserLogin.as_view(), name='login'),
     path('logout', views.UserLogout.as_view(), name='logout'),
-    path('', views.UserView.as_view(), name='user'),
+    path('profile', views.UserView.as_view(), name='user'),
     path('activate/', include('verification_api.urls')),
+    path('cart/', include('cart_api.urls')),
 ]
