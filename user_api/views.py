@@ -1,12 +1,9 @@
-from .serializers import ActivateEmailSerializer
-from django.contrib.auth.models import User  # Replace with your user model
 from rest_framework import status
 from django.contrib.auth import login, logout
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
-from .serializers import UserRegisterSerializer, UserLoginSerializer, UserSerializer, SuperUserRegisterSerializer, ActivateEmailSerializer, SendEmailSerializer
+from .serializers import UserRegisterSerializer, UserLoginSerializer, UserSerializer, SuperUserRegisterSerializer
 from rest_framework import permissions, status
 from .validations import custom_validation, validate_email, validate_password
 
@@ -79,22 +76,3 @@ class UserView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response({'user': serializer.data}, status=status.HTTP_200_OK)
-
-
-class EmailActivationView(APIView):
-    def post(self, request, *args, **kwargs):
-        email_token = kwargs.get('email_token')
-        serializer = ActivateEmailSerializer(
-            data=request.data, context={'request': request, 'email_token': email_token})
-        if serializer.is_valid():
-            return Response({"message": "Your Email is Activated"}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class SendEmailView(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = SendEmailSerializer(
-            data=request.data, context={'request': request})
-        if serializer.is_valid():
-            return Response({"message": "Activation email sent successfully."}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
