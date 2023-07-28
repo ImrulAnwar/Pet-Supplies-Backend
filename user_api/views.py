@@ -5,6 +5,7 @@ from django.contrib.auth import login, logout
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from .serializers import UserRegisterSerializer, UserLoginSerializer, UserSerializer, SuperUserRegisterSerializer, ActivateEmailSerializer, SendEmailSerializer
 from rest_framework import permissions, status
 from .validations import custom_validation, validate_email, validate_password
@@ -16,11 +17,14 @@ class UserRegister(APIView):
     def post(self, request):
         clean_data = custom_validation(request.data)
         serializer = UserRegisterSerializer(data=clean_data)
-        if serializer.is_valid(raise_exception=True):
+
+        try:
+            serializer.is_valid(raise_exception=True)
             user = serializer.create(clean_data)
             if user:
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SuperUserRegister(APIView):
@@ -29,11 +33,13 @@ class SuperUserRegister(APIView):
     def post(self, request):
         clean_data = custom_validation(request.data)
         serializer = SuperUserRegisterSerializer(data=clean_data)
-        if serializer.is_valid(raise_exception=True):
+        try:
+            serializer.is_valid(raise_exception=True)
             user = serializer.create(clean_data)
             if user:
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLogin(APIView):
@@ -45,10 +51,13 @@ class UserLogin(APIView):
         assert validate_email(data)
         assert validate_password(data)
         serializer = UserLoginSerializer(data=data)
-        if serializer.is_valid(raise_exception=True):
+        try:
+            serializer.is_valid(raise_exception=True)
             user = serializer.check_user(data)
             login(request, user)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLogout(APIView):
@@ -56,14 +65,16 @@ class UserLogout(APIView):
     authentication_classes = ()
 
     def post(self, request):
-        logout(request)
-        return Response(status=status.HTTP_200_OK)
+        try:
+            logout(request)
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
     authentication_classes = (SessionAuthentication,)
-    ##
 
     def get(self, request):
         serializer = UserSerializer(request.user)
@@ -73,12 +84,9 @@ class UserView(APIView):
 class EmailActivationView(APIView):
     def post(self, request, *args, **kwargs):
         email_token = kwargs.get('email_token')
-        print("\n"+str(email_token))
         serializer = ActivateEmailSerializer(
             data=request.data, context={'request': request, 'email_token': email_token})
         if serializer.is_valid():
-            # serializer.save()
-            # This will send the activation email if email_token is not provided
             return Response({"message": "Your Email is Activated"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -88,7 +96,5 @@ class SendEmailView(APIView):
         serializer = SendEmailSerializer(
             data=request.data, context={'request': request})
         if serializer.is_valid():
-            # serializer.save()
-            # This will send the activation email if email_token is not provided
             return Response({"message": "Activation email sent successfully."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
