@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+import uuid
 
 
 class AppUserManager(BaseUserManager):
@@ -44,3 +47,12 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+
+@receiver(pre_save, sender=AppUser)
+def send_email_token(sender, instance, **kwargs):
+    if not instance.pk:
+        # Code to execute when a new AppUser instance is being created
+        # Generate and assign the email token here
+        instance.email_token = str(uuid.uuid4())
+        # send_account_activation_email(instance.email, instance.email_token)

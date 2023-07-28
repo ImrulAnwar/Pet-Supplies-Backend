@@ -83,10 +83,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # following are changed attributes
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp-mail.outlook.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'postmaster@mg.bottlenose.co'
-EMAIL_HOST_PASSWORD = 'mys3cr3tp4ssw0rd'
+EMAIL_HOST_USER = 'petinnn325@outlook.com'
+EMAIL_HOST_PASSWORD = 'petsupplies101'
 EMAIL_USE_TLS = True
 
 BASE_URL = 'http://localhost:8000'
