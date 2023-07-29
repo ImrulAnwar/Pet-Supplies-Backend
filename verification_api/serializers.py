@@ -2,6 +2,7 @@ from django.conf import settings
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail, BadHeaderError
+
 UserModel = get_user_model()
 
 
