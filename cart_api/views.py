@@ -29,9 +29,26 @@ class CartItemListView(generics.ListCreateAPIView):
             if serializer.is_valid():
                 user = request.user
                 cart, created = Cart.objects.get_or_create(user=user)
-                serializer.save(cart=cart)
-                return Response(serializer.data, status=HTTP_201_CREATED)
+                item = serializer.validated_data['item']
+
+                # Check if a CartItem with the same item already exists in the cart
+                existing_cart_item = CartItem.objects.filter(
+                    cart=cart, item=item).first()
+
+                if existing_cart_item:
+                    # Increase the quantity of the existing CartItem
+                    existing_cart_item.quantity += serializer.validated_data['quantity']
+                    existing_cart_item.sub_total_price = existing_cart_item.item.price * \
+                        existing_cart_item.quantity
+                    existing_cart_item.save()
+                    serializer = CartItemSerializer(existing_cart_item)
+                else:
+                    serializer.save(cart=cart)
+
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
 

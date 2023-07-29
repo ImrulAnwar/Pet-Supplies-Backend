@@ -31,7 +31,7 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, related_name='items',
                              on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    product_name = models.CharField(max_length=100)
+    # product_name = models.CharField(max_length=100, null=True, blank=True)
     quantity = models.PositiveIntegerField(default=1)
     sub_total_price = models.PositiveIntegerField(default=0)
     slug = models.SlugField(unique=True, null=True, max_length=500, blank=True)
@@ -42,13 +42,7 @@ class CartItem(models.Model):
     def save(self, *args, **kwargs):
         # generate a unique slug
         if not self.slug:
-            base_slug = slugify(self.item.slug)
-            unique_slug = base_slug
-            counter = 1
-            while Item.objects.filter(slug=unique_slug).exists():
-                unique_slug = f"{base_slug}-{counter}"
-                counter += 1
-            self.slug = unique_slug
+            self.slug = slugify(self.item.slug)
         # set the attributes
         if self.item and self.quantity:
             self.sub_total_price = self.item.price * self.quantity
