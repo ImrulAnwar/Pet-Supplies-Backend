@@ -47,15 +47,15 @@ class CartDetailView(generics.RetrieveAPIView):
         return cart
 
 
-class CartItemDeleteView(generics.DestroyAPIView):
+class CartItemDeleteView(APIView):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
     permission_classes = [IsAuthenticated]
 
-    def delete(self, request, *args, **kwargs):
+    def delete(self, request, slug):
         try:
-            cart_item = self.get_object()
-            cart_item.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Exception as e:
-            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+            item = CartItem.objects.get(slug=slug)
+            item.delete()
+            return Response("Item Deleted", status=status.HTTP_204_NO_CONTENT)
+        except CartItem.DoesNotExist:
+            return Response(status.HTTP_404_NOT_FOUND)

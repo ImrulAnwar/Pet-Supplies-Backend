@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from item_api.models import Item
-import uuid
+from django.utils.text import slugify
 
 User = get_user_model()
 
@@ -34,11 +34,22 @@ class CartItem(models.Model):
     product_name = models.CharField(max_length=100)
     quantity = models.PositiveIntegerField(default=1)
     sub_total_price = models.PositiveIntegerField(default=0)
+    slug = models.SlugField(unique=True, null=True, max_length=500, blank=True)
 
     def __str__(self):
         return f"{self.product_name} (Quantity: {self.quantity})"
 
     def save(self, *args, **kwargs):
+        # generate a unique slug
+        if not self.slug:
+            base_slug = slugify(self.item.slug)
+            unique_slug = base_slug
+            counter = 1
+            while Item.objects.filter(slug=unique_slug).exists():
+                unique_slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = unique_slug
+        # set the attributes
         if self.item and self.quantity:
             self.sub_total_price = self.item.price * self.quantity
         super().save(*args, **kwargs)
