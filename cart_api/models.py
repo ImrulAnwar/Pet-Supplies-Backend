@@ -31,7 +31,6 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, related_name='items',
                              on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    # product_name = models.CharField(max_length=100, null=True, blank=True)
     quantity = models.PositiveIntegerField(default=1)
     sub_total_price = models.PositiveIntegerField(default=0)
     slug = models.SlugField(unique=True, null=True, max_length=500, blank=True)
