@@ -24,6 +24,7 @@ class Item(models.Model):
     slug = models.SlugField(unique=True, null=True, max_length=500, blank=True)
     is_avialable = models.BooleanField(default=True)
     is_favorite = models.BooleanField(default=False)
+    is_upcoming = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if not self.slug:

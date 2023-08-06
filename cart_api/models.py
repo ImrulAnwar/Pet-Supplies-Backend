@@ -5,8 +5,7 @@ from django.utils.text import slugify
 
 User = get_user_model()
 
-def product_image_upload_path(instance, filename):
-    return f"item_api/product_images/{instance.pet_type}/{instance.accessory_type}/{filename}"
+
 
 class Cart(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

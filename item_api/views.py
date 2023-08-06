@@ -4,6 +4,7 @@ from .serializers import ItemSerializer
 from rest_framework.response import Response
 from rest_framework import status, permissions
 import os
+from django.conf import settings
 
 
 class IsSuperUserOrReadOnly(permissions.BasePermission):
@@ -62,7 +63,7 @@ class SingleItemView(APIView):
             item = Item.objects.get(slug=slug)
             # Check if the product_image field contains a file
             if item.product_image:
-                file_path = item.product_image.path
+                file_path =os.path.join(settings.MEDIA_ROOT, item.product_image.path) 
                 if os.path.exists(file_path):
                     os.remove(file_path)
             item.delete()
