@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.text import slugify
 
+def product_image_upload_path(instance, filename):
+    return f"item_api/product_images/{instance.pet_type}/{instance.accessory_type}/{filename}"
 
 class Item(models.Model):
     title = models.CharField(max_length=100)
@@ -18,8 +20,7 @@ class Item(models.Model):
     short_description = models.TextField()
     long_description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    product_image = models.ImageField(
-        upload_to="item_api/product_images/", null=True, blank=True)
+    product_image = models.ImageField(upload_to=product_image_upload_path, null=True, blank=True)
     slug = models.SlugField(unique=True, null=True, max_length=500, blank=True)
     is_avialable = models.BooleanField(default=True)
     is_favorite = models.BooleanField(default=False)

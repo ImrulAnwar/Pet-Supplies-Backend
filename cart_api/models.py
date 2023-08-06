@@ -5,6 +5,8 @@ from django.utils.text import slugify
 
 User = get_user_model()
 
+def product_image_upload_path(instance, filename):
+    return f"item_api/product_images/{instance.pet_type}/{instance.accessory_type}/{filename}"
 
 class Cart(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -34,6 +36,7 @@ class CartItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     sub_total_price = models.PositiveIntegerField(default=0)
     slug = models.SlugField(unique=True, null=True, max_length=500, blank=True)
+
 
     def __str__(self):
         return f"{self.product_name} (Quantity: {self.quantity})"
